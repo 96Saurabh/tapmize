@@ -5,33 +5,19 @@ const UserSchema = new mongoose.Schema({
   first: { type: String, required: true },
   middle: { type: String, required: true },
   last: { type: String, required: true },
-  email: { type: String },
-  landmark: { type: String },
-  contact: { type: String },
-  aboutus: { type: String },
+  email: String,
+  landmark: String,
+  contact: String,
+  aboutus: String,
+  profileimg: String,
   otherLinks: [
     {
-      icon: { type: String, required: true },
-      urlLink: { type: String, required: true },
-      title: { type: String, required: true },
+      icon: String,
+      title: String,
+      urlLink: String,
     },
   ],
-  catalogues: [
-    {
-      profileCatalogues: { type: String },
-      heading: { type: String, required: true },
-      subheading: { type: String, required: true },
-      link: { type: String, required: true },
-    },
-  ],
-  Business: [
-    {
-      profileBusiness: { type: String },
-      heading: { type: String, required: true },
-      subheading: { type: String, required: true },
-      link: { type: String, required: true },
-    },
-  ],
+  shareableLink: String,
 });
 
 module.exports = mongoose.model("User", UserSchema);

@@ -16,16 +16,13 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Handle file uploads
+// Handle file uploads (only for profileimg)
 UserInfoRouter.post(
   "/save-user",
-  upload.fields([
-    { name: "profileimg", maxCount: 1 },
-    { name: "profileCatalogues", maxCount: 4 },
-    { name: "profileBusiness", maxCount: 4 } 
-  ]),
+  upload.fields([{ name: "profileimg", maxCount: 1 }]), // Only handle 'profileimg'
   userController.saveUser
 );
+
 
 
 // Define other routes

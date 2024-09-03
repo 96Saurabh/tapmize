@@ -44,44 +44,34 @@ const deleteUserProfile = async (req, res) => {
 
 const saveUser = async (req, res) => {
   try {
-    console.log("Received files:", req.files); 
-    console.log("Received body:", req.body); 
+    console.log("Received files:", req.files);
+    console.log("Received body:", req.body);
 
-    // Handle form data
+    // Ensure `otherLinks` is parsed correctly
+    let otherLinks = req.body.otherLinks;
+
+    // Check if `otherLinks` is a string (meaning it needs parsing)
+    if (typeof otherLinks === 'string') {
+      otherLinks = JSON.parse(otherLinks);
+    }
+
+    // Prepare user data with necessary fields
     const userData = {
       ...req.body,
       profileimg: req.files['profileimg'] ? req.files['profileimg'][0].path : req.body.profileimg,
-      catalogues: req.body.catalogues ? JSON.parse(req.body.catalogues) : [],
-      Business: req.body.Business ? JSON.parse(req.body.Business) : [],
-      otherLinks: req.body.otherLinks ? JSON.parse(req.body.otherLinks) : []
+      otherLinks: otherLinks || [] // Use the parsed `otherLinks` or default to an empty array
     };
 
-    // Handle catalogues files
-    if (req.files['catalogues']) {
-      userData.catalogues = userData.catalogues.map((item, index) => {
-        return {
-          ...item,
-          profileCatalogues: req.files['catalogues'][index] ? req.files['catalogues'][index].path : item.profileCatalogues
-        };
-      });
-    }
-
-    // Handle Business files
-    if (req.files['Business']) {
-      userData.Business = userData.Business.map((item, index) => {
-        return {
-          ...item,
-          profileBusiness: req.files['Business'][index] ? req.files['Business'][index].path : item.profileBusiness
-        };
-      });
-    }
-
-    // Save user data
+    // Save user data to the database
     const user = new User(userData);
     await user.save();
 
     // Generate a unique shareable link
-    const shareableLink = `${req.protocol}://${req.get('host')}/profile/${user._id}`;
+    const shareableLink = `${req.protocol}://${req.get('host')}/api/v1/profile/${user._id}`;
+
+    // Update the user with the generated shareable link
+    user.shareableLink = shareableLink;
+    await user.save(); // Save the updated user with the shareable link
 
     res.status(201).json({
       message: "User saved successfully",
@@ -94,8 +84,6 @@ const saveUser = async (req, res) => {
   }
 };
 
-module.exports = saveUser;
-
 
 
 
@@ -105,3 +93,6 @@ module.exports = {
   getSingleUserProfile,
   deleteUserProfile
 };
+
+
+
