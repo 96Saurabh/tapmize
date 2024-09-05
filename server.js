@@ -1,8 +1,8 @@
+// server.js
+
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-const multer = require('multer');
-const path = require('path');
 const cors = require("cors");
 
 // Routers
@@ -29,28 +29,9 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Static File Serving
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
 // User routers
 app.use("/api/v1/profile", UserInfoRouter);
 app.use("/api/v1", MemberInfoRouter);
-
-// Multer Storage Configuration
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
-  }
-});
-const upload = multer({ storage });
-
-// File Upload Endpoint
-// app.post('/upload', upload.single('file'), (req, res) => {
-//   res.send('File uploaded successfully');
-// });
 
 // 404 Not Found Handler
 app.use("*", (req, res) => {

@@ -1,16 +1,16 @@
 const express = require("express");
 const UserInfoRouter = express.Router();
 const multer = require("multer");
-const path = require("path");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("../Middlewares/cloudinaryConfig"); // Import the Cloudinary config
 const userController = require("../Controllers/Profile.Controller");
 
-// Multer Configuration for Uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "./uploads"); // Directory to save files
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname)); // File naming convention
+// Configure Multer to use Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "user_profiles", // Specify folder in Cloudinary
+    allowed_formats: ["jpg", "jpeg", "png"], // Specify allowed formats
   },
 });
 
@@ -22,7 +22,6 @@ UserInfoRouter.post(
   upload.fields([{ name: "profileimg", maxCount: 1 }]), // Only handle 'profileimg'
   userController.saveUser
 );
-
 
 
 // Define other routes
